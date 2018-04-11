@@ -46,9 +46,13 @@ suites:
     provisioner:
       pillars-from-files:
         domaincontroller.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/domaincontroller.sls
+        base.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/base.sls
+        configuredc.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/configuredc.sls
       pillars:
         top.sls:
           <%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>:
             '*':
               - domaincontroller
+              - base
+              - configuredc
       state_top_from_file: true

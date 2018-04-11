@@ -1,0 +1,40 @@
+{%- import_yaml "pillar/prod/active_directory/base.yaml" as base -%}
+{% set forest = salt['pillar.get']('forest', default=base.forest, merge=True) %}
+ {%- set operation = 'forest' -%}
+{%- set shell = 'powershell' -%}
+{%- set command = [] -%}
+
+{% do command.append('Install-ADDSForest') %}
+{%- for variable, value in base[operation]|dictsort -%}
+{% if variable == 'DatabasePath' %}
+{%  set DatabasePath =  forest['DatabasePath'] %}
+{% do command.append('-%s %s'| format(variable, DatabasePath|join(' '))) %}
+{% elif variable == 'DomainMode' %}
+{%  set DomainMode =  forest['DomainMode'] %}
+{% do command.append('-DomainMode') %}
+{% do command.append('-%s %s'| format(variable, DomainMode|join(' '))) %}
+{% elif variable == 'DomainName' %}
+{%  set DomainName =  forest['DomainName'] %}
+{% do command.append('-%s %s'| format(variable, DomainName|join(' '))) %}
+
+{% elif variable == 'DomainDomainNetBIOSNameName' %}
+{%  set DomainDomainNetBIOSNameName =  forest['DomainDomainNetBIOSNameName'] %}
+{% do command.append('-%s %s'| format(variable, DomainDomainNetBIOSNameName|join(' '))) %}
+
+{% elif variable == 'ForestMode' %}
+{%  set ForestMode =  forest['ForestMode'] %}
+{% do command.append('-%s %s'| format(variable, ForestMode|join(' '))) %}
+
+{%- do command.append('-Force -InstallDNS -SafeModeAdministratorPassword sysadmin@123') -%}
+{%endif  %}
+{%- endfor -%}
+{#{%- macro generate_promotion_command(operation) -%}#}
+{#{{ caller(shell, command|join(' ')) }}#}
+{#{% endmacro %}#}
+
+
+
+
+
+
+

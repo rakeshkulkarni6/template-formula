@@ -1,5 +1,4 @@
-{% if saltenv == 'dev' %}{% set env = 'dev'  %}{% endif -%}
-{% if saltenv == 'production' %}{% set env = 'production'  %}{% endif -%}
 {{ saltenv }}:
    '*':
-    - pillar.production.domaincontroller
+    - pillar.prod.domaincontroller
+    - pillar.prod.active_directory
