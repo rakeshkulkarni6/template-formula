@@ -7,7 +7,7 @@ platforms:
   - name: windows-2012
     provisioner:
       salt_bootstrap_url: https://raw.githubusercontent.com/saltstack/salt-bootstrap/develop/bootstrap-salt.ps1
-      salt_bootstrap_options: -version <%= ENV['TEST_KITCHEN_SALT_VERSION'] %>
+      salt_bootstrap_options: -version <%= ENV['TEST_KITCHEN_SALT_VERSION'] || '2017.7.2' %>
     driver:
       box: opentable/win-2012r2-standard-amd64-nocm
     transport:
@@ -19,10 +19,9 @@ platforms:
 provisioner:
   name: salt_solo
   is_file_root: false
-  formula: ""
-  vendor_path: ./formulas
+  formula: "formulas"
   require_chef: false
-  salt_version: <%= ENV['TEST_KITCHEN_SALT_VERSION'] %>
+  salt_version:  <%= ENV['TEST_KITCHEN_SALT_VERSION'] || '2017.7.2' %>
   salt_copy_filter:
     - .git
     - .gitignore
@@ -45,14 +44,13 @@ suites:
   - name: template
     provisioner:
       pillars-from-files:
-        domaincontroller.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/domaincontroller.sls
-        base.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/base.sls
-        configuredc.sls: pillar/<%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>/configuredc.sls
+        base.sls: test/pillar/basepillar
       pillars:
         top.sls:
-          <%= ENV['TEST_KITCHEN_ENVIRONMENT'] %>:
+          base:
             '*':
-              - domaincontroller
               - base
-              - configuredc
-      state_top_from_file: true
+      state_top:
+        base:
+          '*':
+            - formulas.active_directory
